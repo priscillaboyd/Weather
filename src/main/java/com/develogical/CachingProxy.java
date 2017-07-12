@@ -3,14 +3,16 @@ package com.develogical;
 import com.weather.*;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CachingProxy implements ForecasterInterface {
 
     //create a map to store results
-    private Map<String,String> cacheOutlook = new HashMap();
-    private Map<String,Integer> cacheTemperature = new HashMap();
+    Map<String,String> cacheOutlook = new LinkedHashMap();
+    Map<String,Integer> cacheTemperature = new LinkedHashMap();
     private ForecasterInterface forecaster = null;
+    int cacheMaxSize = 5;
 
     CachingProxy(ForecasterInterface forecaster){
         this.forecaster = forecaster;
@@ -35,23 +37,41 @@ public class CachingProxy implements ForecasterInterface {
         String report = region + " " + day;
 
         //Use what's in cache if already exists
-        if (cacheTemperature.containsKey(report))
+        if (cacheTemperature.containsKey(report)){
             return cacheTemperature.get(report);
+        }
 
-        //If it doesn't, do it and add to the cache
+        //add it to the cache
+        if(cacheTemperature.size() == cacheMaxSize) {
+            //if adding to cache exceeds limit, get rid of last entry
+            cacheTemperature.remove(cacheTemperature.get(cacheMaxSize));
+            System.out.println(cacheTemperature);
+        }
+
         int temperature = forecaster.getTemperature(region, day);
         cacheTemperature.put(report, temperature);
         return temperature;
+
     }
 
+    // get max cache size
+    public int getCacheMaxSize() {
+        return cacheMaxSize;
+    }
 
+    // enforce cache limit
+    private boolean exceedsCacheLimit(Map cache){
+        // if adding another one exceeds limit, return true
+        if((cache.size()+1) > cacheMaxSize)
+            return true;
 
-//    public static void main(String[] args) {
-//        ForecasterAdapter forecasterAdapter = new ForecasterAdapter();
-//        CachingProxy cachingProxy = new CachingProxy(forecasterAdapter);
-//        System.out.println(cachingProxy.getOutlook(Region.LONDON, Day.MONDAY));
-//
-//        System.out.println(cachingProxy.getOutlook(Region.LONDON, Day.MONDAY));
-//    }
+        // otherwise it doesn't exceed limit
+        return false;
+    }
+
+    // get cache size
+    public int cacheSize(Map cache) {
+        return cache.size();
+    }
 
 }
