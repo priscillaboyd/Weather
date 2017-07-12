@@ -10,7 +10,6 @@ public class CachingProxy implements ForecasterInterface {
     //create a map to store results
     private Map<String,String> cacheOutlook = new HashMap();
     private Map<String,Integer> cacheTemperature = new HashMap();
-
     private ForecasterInterface forecaster = null;
 
     CachingProxy(ForecasterInterface forecaster){
@@ -19,11 +18,13 @@ public class CachingProxy implements ForecasterInterface {
 
     @Override
     public String getOutlook(Region region, Day day) {
-        //check if outlook is in cache
         String report = region + " " + day;
+
+        //Use what's in cache if already exists
         if (cacheOutlook.containsKey(report))
             return cacheOutlook.get(report);
 
+        //If it doesn't, do it and add to the cache
         String outlook = forecaster.getOutlook(region, day);
         cacheOutlook.put(report, outlook);
         return outlook;
