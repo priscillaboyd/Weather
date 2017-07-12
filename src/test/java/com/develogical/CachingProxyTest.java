@@ -1,51 +1,31 @@
 package com.develogical;
 
-import com.weather.Day;
-import com.weather.Forecast;
-import com.weather.Forecaster;
-import com.weather.Region;
+import com.weather.*;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class CachingProxyTest {
 
-    ForecasterInterface forecaster = mock(ForecasterInterface.class);
+    private ForecasterInterface mockedInterface = mock(ForecasterInterface.class);
+    private Region region = Region.EDINBURGH;
+    private Day day = Day.FRIDAY;
 
+    /*/
+        1) test that cache works to get result of outlook
+        2) test that cache works to get result of temperature
+     */
+
+    //Test that caching works without knowing the implementation
     @Test
-    public void checkThatProxyMapHasResultOfOutlook(){
-        CachingProxy cachingProxy =  new CachingProxy(forecaster);
-        Region region = Region.EDINBURGH;
-        Day day = Day.TUESDAY;
-        cachingProxy.getOutlook(region, day);
-        String key = region + " " + day;
-        assertTrue(cachingProxy.cacheOutlook.containsKey(key));
+    public void checkThatCachingWorks(){
+        CachingProxy proxy = new CachingProxy(mockedInterface);
+        when(mockedInterface.getOutlook(region, day)).thenReturn("snow");
+        assertEquals(proxy.getOutlook(region, day), "snow");
     }
-
-    @Test
-    public void checkThatProxyMapHasResultOfTemp(){
-        CachingProxy cachingProxy =  new CachingProxy(forecaster);
-        Region region = Region.EDINBURGH;
-        Day day = Day.TUESDAY;
-        cachingProxy.getTemperature(region, day);
-        String key = region + " " + day;
-        assertTrue(cachingProxy.cacheTemperature.containsKey(key));
-    }
-
-//    @Test
-//    public void checkThatProxyCachingIsWorking(){
-//        CachingProxy cachingProxy =  new CachingProxy(forecaster);
-//        Region region = Region.EDINBURGH;
-//        Day day = Day.TUESDAY;
-//        cachingProxy.getTemperature(region, day);
-//        String key = region + " " + day;
-//        assertTrue(cachingProxy.cacheTemperature.containsKey(key));
-//    }
-
 
 
 }

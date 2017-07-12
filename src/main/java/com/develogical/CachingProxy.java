@@ -1,23 +1,19 @@
 package com.develogical;
 
-import com.weather.Day;
 import com.weather.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by ape03 on 12/07/2017.
- */
 public class CachingProxy implements ForecasterInterface {
 
     //create a map to store results
-    Map<String,String> cacheOutlook = new HashMap();
-    Map<String,Integer> cacheTemperature = new HashMap();
+    private Map<String,String> cacheOutlook = new HashMap();
+    private Map<String,Integer> cacheTemperature = new HashMap();
 
     private ForecasterInterface forecaster = null;
 
-    public CachingProxy(ForecasterInterface forecaster){
+    CachingProxy(ForecasterInterface forecaster){
         this.forecaster = forecaster;
     }
 
