@@ -41,32 +41,25 @@ public class CachingProxy implements ForecasterInterface {
             return cacheTemperature.get(report);
         }
 
-        //add it to the cache
+        //removing oldest entry if limit has reached
         if(cacheTemperature.size() == cacheMaxSize) {
-            //if adding to cache exceeds limit, get rid of last entry
-            cacheTemperature.remove(cacheTemperature.get(cacheMaxSize));
-            System.out.println(cacheTemperature);
+            removeOldestEntry(cacheTemperature);
         }
 
         int temperature = forecaster.getTemperature(region, day);
         cacheTemperature.put(report, temperature);
         return temperature;
+    }
 
+    // remove oldest entry from cache
+    public void removeOldestEntry(Map cache){
+        Object oldestEntry = cache.get(cacheMaxSize);
+        cache.remove(oldestEntry);
     }
 
     // get max cache size
     public int getCacheMaxSize() {
         return cacheMaxSize;
-    }
-
-    // enforce cache limit
-    private boolean exceedsCacheLimit(Map cache){
-        // if adding another one exceeds limit, return true
-        if((cache.size()+1) > cacheMaxSize)
-            return true;
-
-        // otherwise it doesn't exceed limit
-        return false;
     }
 
     // get cache size

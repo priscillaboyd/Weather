@@ -4,12 +4,11 @@ import com.weather.*;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import java.util.Map;
+
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class CachingProxyTest {
 
@@ -19,7 +18,7 @@ public class CachingProxyTest {
     private CachingProxy proxy = new CachingProxy(mockedInterface);
 
     @Test
-    public void checkThatProxyImplementsInterface(){
+    public void checkThatProxyImplementsInterface() {
         when(mockedInterface.getOutlook(region, day)).thenReturn("snow");
         assertEquals(proxy.getOutlook(region, day), "snow");
         when(mockedInterface.getTemperature(region, day)).thenReturn(30);
@@ -27,7 +26,7 @@ public class CachingProxyTest {
     }
 
     @Test
-    public void checkProxyCachingWorksForOutlook(){
+    public void checkProxyCachingWorksForOutlook() {
         long startTime;
         long endTime;
 
@@ -50,7 +49,7 @@ public class CachingProxyTest {
     }
 
     @Test
-    public void checkProxyCachingWorksForTemperature(){
+    public void checkProxyCachingWorksForTemperature() {
         long startTime;
         long endTime;
 
@@ -73,7 +72,7 @@ public class CachingProxyTest {
     }
 
     @Test
-    public void checkTemperatureCacheHasAMaxSizeThatWorks(){
+    public void checkTemperatureCacheHasAMaxSizeThatWorks() {
         // get cache max size (limit) and store it
         int cacheMaxSize = proxy.getCacheMaxSize();
 
@@ -95,6 +94,26 @@ public class CachingProxyTest {
         assertTrue(cacheSize <= cacheMaxSize);
     }
 
-}
+    @Test
+    public void checkOldestEntryIsRemovedFromCacheWhenLimitIsReached() {
+        int cacheMaxSize = proxy.cacheMaxSize;
 
+        proxy.getTemperature(Region.EDINBURGH, Day.MONDAY);
+        proxy.getTemperature(Region.MANCHESTER, Day.MONDAY);
+        proxy.getTemperature(Region.NORTH_ENGLAND, Day.SATURDAY);
+        proxy.getTemperature(Region.SOUTH_WEST_ENGLAND, Day.MONDAY);
+        proxy.getTemperature(Region.MANCHESTER, Day.MONDAY);
+
+        Object entry = proxy.cacheTemperature.entrySet().iterator().next();
+
+        // set cache to have its size as the limit
+        when(proxy.cacheTemperature.size()).thenReturn(cacheMaxSize);
+
+        // TODO: check if removeOldestEntry has run
+
+//        assertNotSame(entry,
+//                proxy.getTemperature(Region.EDINBURGH, Day.MONDAY));
+//    }
+    }
+}
 
