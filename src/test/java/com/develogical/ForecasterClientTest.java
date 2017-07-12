@@ -7,7 +7,7 @@ import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-public class PutYourTestCodeInThisDirectoryTest {
+public class ForecasterClientTest {
     @Test
     public void getOutlookAndTemperatureForALocation() {
         Forecaster forecaster = new Forecaster();

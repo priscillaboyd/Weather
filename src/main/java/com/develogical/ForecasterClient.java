@@ -5,7 +5,7 @@ import com.weather.Forecast;
 import com.weather.Forecaster;
 import com.weather.Region;
 
-public class Example {
+public class ForecasterClient {
     public static void main(String[] args) {
         // This is just an example of using the 3rd party API - delete this class before submission.
         Forecaster forecaster = new Forecaster();
