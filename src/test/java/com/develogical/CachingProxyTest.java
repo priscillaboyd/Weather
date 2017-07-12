@@ -26,15 +26,26 @@ public class CachingProxyTest {
         assertTrue(cachingProxy.cacheOutlook.containsKey(key));
     }
 
+    @Test
+    public void checkThatProxyMapHasResultOfTemp(){
+        CachingProxy cachingProxy =  new CachingProxy(forecaster);
+        Region region = Region.EDINBURGH;
+        Day day = Day.TUESDAY;
+        cachingProxy.getTemperature(region, day);
+        String key = region + " " + day;
+        assertTrue(cachingProxy.cacheTemperature.containsKey(key));
+    }
+
 //    @Test
-//    public void checkThatProxyMapHasResultOfTemp(){
-//        CachingProxy cachingProxy =  new CachingProxy();
+//    public void checkThatProxyCachingIsWorking(){
+//        CachingProxy cachingProxy =  new CachingProxy(forecaster);
 //        Region region = Region.EDINBURGH;
 //        Day day = Day.TUESDAY;
 //        cachingProxy.getTemperature(region, day);
 //        String key = region + " " + day;
 //        assertTrue(cachingProxy.cacheTemperature.containsKey(key));
 //    }
+
 
 
 }
