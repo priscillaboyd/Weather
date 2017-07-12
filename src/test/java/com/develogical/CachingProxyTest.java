@@ -10,30 +10,31 @@ import org.mockito.Mock;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public class CachingProxyTest {
 
-    @Mock
-    ForecasterInterface forecasterInterface = new ForecasterInterface() {
-        @Override
-        public String getOutlook(Region region, Day day) {
-            return null;
-        }
-
-        @Override
-        public int getTemperature(Region region, Day day) {
-            return 0;
-        }
-    };
+    ForecasterInterface forecaster = mock(ForecasterInterface.class);
 
     @Test
-    public void checkThatProxyMapHasResult(){
-        CachingProxy cachingProxy =  new CachingProxy();
+    public void checkThatProxyMapHasResultOfOutlook(){
+        CachingProxy cachingProxy =  new CachingProxy(forecaster);
         Region region = Region.EDINBURGH;
         Day day = Day.TUESDAY;
         cachingProxy.getOutlook(region, day);
         String key = region + " " + day;
-        assertTrue(cachingProxy.cache.containsKey(key));
+        assertTrue(cachingProxy.cacheOutlook.containsKey(key));
     }
+
+//    @Test
+//    public void checkThatProxyMapHasResultOfTemp(){
+//        CachingProxy cachingProxy =  new CachingProxy();
+//        Region region = Region.EDINBURGH;
+//        Day day = Day.TUESDAY;
+//        cachingProxy.getTemperature(region, day);
+//        String key = region + " " + day;
+//        assertTrue(cachingProxy.cacheTemperature.containsKey(key));
+//    }
+
 
 }
