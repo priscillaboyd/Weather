@@ -48,4 +48,27 @@ public class CachingProxyTest {
         assertThat(firstRunDuration > secondRunDuration, is(true));
     }
 
+    @Test
+    public void checkProxyCachingWorksForTemperature(){
+        long startTime;
+        long endTime;
+
+        //First run - should take longer
+        startTime = System.nanoTime();
+        when(mockedInterface.getTemperature(region, day)).thenReturn(30);
+        proxy.getOutlook(region, day);
+        endTime = System.nanoTime();
+        long firstRunDuration = endTime - startTime;
+
+        //Second run - should be quicker (using cache)
+        startTime = System.nanoTime();
+        when(mockedInterface.getTemperature(region, day)).thenReturn(30);
+        proxy.getOutlook(region, day);
+        endTime = System.nanoTime();
+        long secondRunDuration = endTime - startTime;
+
+        //Check the first run takes longer than the second (cached)
+        assertThat(firstRunDuration > secondRunDuration, is(true));
+    }
+
 }

@@ -32,13 +32,19 @@ public class CachingProxy implements ForecasterInterface {
 
     @Override
     public int getTemperature(Region region, Day day) {
-        //TODO implement cache
-
         String report = region + " " + day;
+
+        //Use what's in cache if already exists
+        if (cacheTemperature.containsKey(report))
+            return cacheTemperature.get(report);
+
+        //If it doesn't, do it and add to the cache
         int temperature = forecaster.getTemperature(region, day);
         cacheTemperature.put(report, temperature);
         return temperature;
     }
+
+
 
 //    public static void main(String[] args) {
 //        ForecasterAdapter forecasterAdapter = new ForecasterAdapter();
