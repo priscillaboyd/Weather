@@ -13,8 +13,9 @@ public class CachingProxy implements ForecasterInterface {
     private ForecasterInterface forecaster = null;
     int cacheMaxSize = 5; //assume same for both
 
-    CachingProxy(ForecasterInterface forecaster){
+    CachingProxy(ForecasterInterface forecaster, int cacheMaxSize){
         this.forecaster = forecaster;
+        this.cacheMaxSize = cacheMaxSize;
     }
 
     @Override
