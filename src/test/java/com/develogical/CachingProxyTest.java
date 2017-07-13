@@ -4,8 +4,6 @@ import com.weather.*;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import java.util.Map;
-
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -27,70 +25,67 @@ public class CachingProxyTest {
 
     @Test
     public void checkProxyCachingWorksForOutlook() {
-        long startTime;
-        long endTime;
-
-        //First run - should take longer
-        startTime = System.nanoTime();
+        //mock that the request has returned "snow" from getOutlook
         when(mockedInterface.getOutlook(region, day)).thenReturn("snow");
         proxy.getOutlook(region, day);
-        endTime = System.nanoTime();
-        long firstRunDuration = endTime - startTime;
 
-        //Second run - should be quicker (using cache)
-        startTime = System.nanoTime();
-        when(mockedInterface.getOutlook(region, day)).thenReturn("snow");
-        proxy.getOutlook(region, day);
-        endTime = System.nanoTime();
-        long secondRunDuration = endTime - startTime;
+        //check that mock interface is only called once (i.e. means cache is working)
+        verify(mockedInterface, times(1)).getOutlook(region, day);
 
-        //Check the first run takes longer than the second (cached)
-        assertThat(firstRunDuration > secondRunDuration, is(true));
+        //check that we've received the right data again
+        assertEquals(proxy.getOutlook(region, day), "snow");
     }
 
     @Test
     public void checkProxyCachingWorksForTemperature() {
-        long startTime;
-        long endTime;
+        //mock that the request has returned "snow" from getOutlook
+        when(mockedInterface.getTemperature(region, day)).thenReturn(15);
+        proxy.getTemperature(region, day);
 
-        //First run - should take longer
-        startTime = System.nanoTime();
-        when(mockedInterface.getTemperature(region, day)).thenReturn(30);
-        proxy.getOutlook(region, day);
-        endTime = System.nanoTime();
-        long firstRunDuration = endTime - startTime;
+        //check that mock interface is only called once (i.e. means cache is working)
+        verify(mockedInterface, times(1)).getTemperature(region, day);
 
-        //Second run - should be quicker (using cache)
-        startTime = System.nanoTime();
-        when(mockedInterface.getTemperature(region, day)).thenReturn(30);
-        proxy.getOutlook(region, day);
-        endTime = System.nanoTime();
-        long secondRunDuration = endTime - startTime;
+        //check that we've received the right data again
+        assertEquals(proxy.getTemperature(region, day), 15);
+    }
 
-        //Check the first run takes longer than the second (cached)
-        assertThat(firstRunDuration > secondRunDuration, is(true));
+    @Test
+    public void checkOutlookCacheHasAMaxSizeThatWorks() {
+        // set cacheSize is the same cache max size (reached limit)
+        int cacheSize = proxy.cacheTemperature.size();
+
+        // set max size same as current cache size
+        int cacheMaxSize = cacheSize;
+
+        //add various entries (more than limit stipulates)
+        proxy.getOutlook(Region.SOUTH_EAST_ENGLAND, Day.MONDAY);
+        proxy.getOutlook(Region.SOUTH_WEST_ENGLAND, Day.MONDAY);
+        proxy.getOutlook(Region.WALES, Day.SATURDAY);
+        proxy.getOutlook(Region.EDINBURGH, Day.MONDAY);
+        proxy.getOutlook(Region.MANCHESTER, Day.MONDAY);
+        proxy.getOutlook(Region.NORTH_ENGLAND, Day.SATURDAY);
+
+        //assert size of cache still meets limit
+        assertTrue(cacheSize <= cacheMaxSize);
     }
 
     @Test
     public void checkTemperatureCacheHasAMaxSizeThatWorks() {
-        // get cache max size (limit) and store it
-        int cacheMaxSize = proxy.getCacheMaxSize();
+        // set cacheSize is the same cache max size (reached limit)
+        int cacheSize = proxy.cacheTemperature.size();
 
-        // set cache size to meet cache size limit
-        int cacheSize = cacheMaxSize;
+        // set max size same as current cache size
+        int cacheMaxSize = cacheSize;
 
-        //mock that we've reached the cache size
-        when(proxy.getTemperature(region, day)).thenReturn(cacheSize);
+        //add various entries (more than limit stipulates)
+        proxy.getOutlook(Region.SOUTH_EAST_ENGLAND, Day.MONDAY);
+        proxy.getOutlook(Region.SOUTH_WEST_ENGLAND, Day.MONDAY);
+        proxy.getOutlook(Region.WALES, Day.SATURDAY);
+        proxy.getOutlook(Region.EDINBURGH, Day.MONDAY);
+        proxy.getOutlook(Region.MANCHESTER, Day.MONDAY);
+        proxy.getOutlook(Region.NORTH_ENGLAND, Day.SATURDAY);
 
-        //test adding other entries do not mean limit is exceeded
-        proxy.getTemperature(Region.SOUTH_EAST_ENGLAND, Day.MONDAY);
-        proxy.getTemperature(Region.SOUTH_WEST_ENGLAND, Day.MONDAY);
-        proxy.getTemperature(Region.WALES, Day.SATURDAY);
-        proxy.getTemperature(Region.EDINBURGH, Day.MONDAY);
-        proxy.getTemperature(Region.MANCHESTER, Day.MONDAY);
-        proxy.getTemperature(Region.NORTH_ENGLAND, Day.SATURDAY);
-
-        //assert size of cache meets limit
+        //assert size of cache still meets limit
         assertTrue(cacheSize <= cacheMaxSize);
     }
 
@@ -109,11 +104,19 @@ public class CachingProxyTest {
         // set cache to have its size as the limit
         when(proxy.cacheTemperature.size()).thenReturn(cacheMaxSize);
 
-        // TODO: check if removeOldestEntry has run
+        // TODO: check if removeOldestEntry has run?
 
 //        assertNotSame(entry,
 //                proxy.getTemperature(Region.EDINBURGH, Day.MONDAY));
 //    }
     }
+
+    @Test
+    public void checkCacheEntriesHaveTimeStamp(){
+
+        //check that you have a timestamp when retrieving a cache entry
+
+    }
+
 }
 

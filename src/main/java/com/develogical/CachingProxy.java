@@ -3,16 +3,15 @@ package com.develogical;
 import com.weather.*;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CachingProxy implements ForecasterInterface {
 
     //create a map to store results
-    Map<String,String> cacheOutlook = new LinkedHashMap();
-    Map<String,Integer> cacheTemperature = new LinkedHashMap();
+    Map<String,String> cacheOutlook = new HashMap();
+    Map<String,Integer> cacheTemperature = new HashMap();
     private ForecasterInterface forecaster = null;
-    int cacheMaxSize = 5;
+    int cacheMaxSize = 5; //assume same for both
 
     CachingProxy(ForecasterInterface forecaster){
         this.forecaster = forecaster;
@@ -52,19 +51,13 @@ public class CachingProxy implements ForecasterInterface {
     }
 
     // remove oldest entry from cache
-    public void removeOldestEntry(Map cache){
+    private void removeOldestEntry(Map cache){
         Object oldestEntry = cache.get(cacheMaxSize);
         cache.remove(oldestEntry);
     }
 
     // get max cache size
-    public int getCacheMaxSize() {
-        return cacheMaxSize;
-    }
-
-    // get cache size
-    public int cacheSize(Map cache) {
-        return cache.size();
+    private int getCacheMaxSize() { return cacheMaxSize;
     }
 
 }
