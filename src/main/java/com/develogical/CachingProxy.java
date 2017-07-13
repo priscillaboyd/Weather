@@ -8,10 +8,10 @@ import java.util.Map;
 public class CachingProxy implements ForecasterInterface {
 
     //create a map to store results
-    Map<String,String> cacheOutlook = new HashMap();
-    Map<String,Integer> cacheTemperature = new HashMap();
+    private Map<String,String> cacheOutlook = new HashMap();
+    private Map<String,Integer> cacheTemperature = new HashMap();
     private ForecasterInterface forecaster = null;
-    int cacheMaxSize = 5; //assume same for both
+    private int cacheMaxSize = 5; //assume same for both
 
     CachingProxy(ForecasterInterface forecaster, int cacheMaxSize){
         this.forecaster = forecaster;
@@ -55,10 +55,6 @@ public class CachingProxy implements ForecasterInterface {
     private void removeOldestEntry(Map cache){
         Object oldestEntry = cache.get(cacheMaxSize);
         cache.remove(oldestEntry);
-    }
-
-    // get max cache size
-    private int getCacheMaxSize() { return cacheMaxSize;
     }
 
 }
