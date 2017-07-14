@@ -10,17 +10,27 @@ public class ForecasterAdapter implements ForecasterInterface {
 
     private Forecaster forecaster = null;
 
+//    @Override
+//    public String getOutlook(Region region, Day day) {
+//        forecaster = new Forecaster();
+//        Forecast forecast = forecaster.forecastFor(region, day);
+//        return forecast.summary();
+//    }
+//
+//    @Override
+//    public int getTemperature(Region region, Day day) {
+//        forecaster = new Forecaster();
+//        Forecast forecast = forecaster.forecastFor(region, day);
+//        return forecast.temperature();
+//    }
+
     @Override
     public String getOutlook(Region region, Day day) {
-        forecaster = new Forecaster();
-        Forecast forecast = forecaster.forecastFor(region, day);
-        return forecast.summary();
+        return null;
     }
 
     @Override
     public int getTemperature(Region region, Day day) {
-        forecaster = new Forecaster();
-        Forecast forecast = forecaster.forecastFor(region, day);
-        return forecast.temperature();
+        return 0;
     }
 }
