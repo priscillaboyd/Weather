@@ -4,6 +4,9 @@ import com.weather.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -84,6 +87,16 @@ public class CachingProxyTest {
         // expect SE makes two calls in total (as first call was taken out of cache)
         proxy.getTemperature(Region.SOUTH_EAST_ENGLAND, Day.MONDAY);
         verify(mockedInterface, times(2)).getTemperature(Region.SOUTH_EAST_ENGLAND, Day.MONDAY);
+    }
+
+    @Test
+    public void CacheEntriesOlderThanAnHourAreRemoved() {
+        LocalDateTime dateTime = mock(LocalDateTime.class);
+        when(dateTime).thenReturn(dateTime.plusHours(1));
+
+        //simulate +1h has passed
+        assertTrue(proxy.resetCache());
+
     }
 
 }

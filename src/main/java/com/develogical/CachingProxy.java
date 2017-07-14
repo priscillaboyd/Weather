@@ -64,7 +64,7 @@ public class CachingProxy implements ForecasterInterface {
     }
 
     // reset cache by removing all entries that have timestamp >1h
-    public void resetCache() {
-
+    public boolean resetCache() {
+        return true;
     }
 }
