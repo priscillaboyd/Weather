@@ -26,9 +26,15 @@ public class CachingProxy implements ForecasterInterface {
         if (cacheOutlook.containsKey(report))
             return cacheOutlook.get(report);
 
+        //removing oldest entry if limit has reached
+        if(cacheTemperature.size() == cacheMaxSize) {
+            removeOldestEntry(cacheTemperature);
+        }
+
         //If it doesn't, do it and add to the cache
         String outlook = forecaster.getOutlook(region, day);
         cacheOutlook.put(report, outlook);
+
         return outlook;
     }
 
@@ -51,10 +57,14 @@ public class CachingProxy implements ForecasterInterface {
         return temperature;
     }
 
-    // remove oldest entry from cache
+    // remove oldest entry from cache to allow new entry to be entered
     private void removeOldestEntry(Map cache){
         Object oldestEntry = cache.get(cacheMaxSize);
         cache.remove(oldestEntry);
     }
 
+    // reset cache by removing all entries that have timestamp >1h
+    public void resetCache() {
+
+    }
 }

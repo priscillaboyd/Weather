@@ -1,6 +1,7 @@
 package com.develogical;
 
 import com.weather.*;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -64,41 +65,26 @@ public class CachingProxyTest {
         // expect SE makes two calls in total (as first call was taken out of cache)
         proxy.getOutlook(Region.SOUTH_EAST_ENGLAND, Day.MONDAY);
         verify(mockedInterface, times(2)).getOutlook(Region.SOUTH_EAST_ENGLAND, Day.MONDAY);
-
-//        // expect north england data only makes one call in total via i/f
-//        proxy.getOutlook(Region.NORTH_ENGLAND, Day.MONDAY);
-//        verify(mockedInterface, times(1)).getOutlook(Region.NORTH_ENGLAND, Day.MONDAY);
-
-
     }
 
-//    @Test
-//    public void checkOldestEntryIsRemovedFromCacheWhenLimitIsReached() {
-//        int cacheMaxSize = proxy.cacheMaxSize;
-//
-//        proxy.getTemperature(Region.EDINBURGH, Day.MONDAY);
-//        proxy.getTemperature(Region.MANCHESTER, Day.MONDAY);
-//        proxy.getTemperature(Region.NORTH_ENGLAND, Day.SATURDAY);
-//        proxy.getTemperature(Region.SOUTH_WEST_ENGLAND, Day.MONDAY);
-//        proxy.getTemperature(Region.MANCHESTER, Day.MONDAY);
-//
-//        Object entry = proxy.cacheTemperature.entrySet().iterator().next();
-//
-//        // set cache to have its size as the limit
-//        when(proxy.cacheTemperature.size()).thenReturn(cacheMaxSize);
-//
-//        // TODO: check if removeOldestEntry has run?
-//
-////        assertNotSame(entry,
-////                proxy.getTemperature(Region.EDINBURGH, Day.MONDAY));
-////    }
-//    }
+    @Test
+    public void checkTemperatureCacheHasAMaxSizeThatWorks() {
+        //add various entries (more than limit stipulates)
+        mockedInterface.getTemperature(Region.SOUTH_EAST_ENGLAND, Day.MONDAY);
+        mockedInterface.getTemperature(Region.SOUTH_WEST_ENGLAND, Day.MONDAY);
+        mockedInterface.getTemperature(Region.WALES, Day.SATURDAY);
+        mockedInterface.getTemperature(Region.EDINBURGH, Day.MONDAY);
+        mockedInterface.getTemperature(Region.MANCHESTER, Day.MONDAY);
+        mockedInterface.getTemperature(Region.NORTH_ENGLAND, Day.MONDAY);
 
-//    @Test
-//    public void checkCacheEntriesHaveTimeStamp(){
-//
-//        //check that you have a timestamp when retrieving a cache entry
-//
-//    }
+        // expect manchester data only makes one call in total via i/f
+        proxy.getTemperature(Region.MANCHESTER, Day.SATURDAY);
+        verify(mockedInterface, times(1)).getTemperature(Region.MANCHESTER, Day.SATURDAY);
+
+        // expect SE makes two calls in total (as first call was taken out of cache)
+        proxy.getTemperature(Region.SOUTH_EAST_ENGLAND, Day.MONDAY);
+        verify(mockedInterface, times(2)).getTemperature(Region.SOUTH_EAST_ENGLAND, Day.MONDAY);
+    }
 
 }
+
